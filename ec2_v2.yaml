@@ -1,0 +1,40 @@
+Parameters:
+  # Input Parameters in console aws cloudformation
+  SecurityGroupDescription:
+    Description: Descricao do Security Group
+    Type: String
+  CidrIpDescription:
+    Description: Descricao do endereco de IP da sua maquina que vai acessar a ec2 via SSH
+    Type: String
+
+Resources:
+  # input infos about definition to instance ec2
+  MyInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      AvailabilityZone: sa-east-1c
+      ImageId: "ami-05e809fbeee38dd5e"
+      InstanceType: t2.micro
+      SecurityGroups:
+        - !Ref ServerSecurityGroup
+
+  # elastic IP
+  MeuIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      InstanceId: !Ref MyInstance
+
+  # security group
+  ServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Ref SecurityGroupDescription
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: !Ref CidrIpDescription
